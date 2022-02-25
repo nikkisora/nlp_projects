@@ -46,7 +46,7 @@ for cat in categories:
         PAGES = data['query']['categorymembers']
         pages.extend([p['title'] for p in PAGES])
 
-with open('l1/corpus.txt', 'w+', encoding='utf-8') as corpus:
+with open('l1/corpus/corpus.txt', 'w+', encoding='utf-8') as corpus:
     for t in tqdm.tqdm(pages):
         if 'Category:' in t or 'List of' in t:
             continue

@@ -8,7 +8,7 @@ import tqdm
 from common import str_hash
 
 
-with open('l1/corpus.txt', 'r', encoding='utf-8') as f:
+with open('l1/corpus/corpus.txt', 'r', encoding='utf-8') as f:
     f_t = f.read().lower()
     f_t = re.sub(r'[-/]+', ' ', f_t)
     f_t = re.sub(r'[^a-z ]','',f_t)
@@ -21,7 +21,7 @@ with open('l1/corpus.txt', 'r', encoding='utf-8') as f:
                 d[hs].append(w)
         else:
             d[hs] = [w]
-    with open("l1/words.json", "w") as outfile:
+    with open("l1/dictionaries/words.json", "w") as outfile:
         json.dump(d, outfile)
 
 # import pandas as pd

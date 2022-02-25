@@ -21,7 +21,7 @@ S = requests.Session()
 
 pages = 0
 
-with open('l1/corpus_rand.txt', 'w+', encoding='utf-8') as corpus:
+with open('l1/corpus/corpus_rand.txt', 'w', encoding='utf-8') as corpus:
     with tqdm.tqdm(total=num) as p_bar:
         while pages < num:
             R = S.get(url=URL, params=PARAMS)

@@ -4,7 +4,7 @@ import pandas as pd
 import re
 
 
-df = pd.read_csv('l1/word_freq.csv')
+df = pd.read_csv('l1/dictionaries/word_freq.csv')
 
 def write_to_file(file_name, lst):
     not_ent = set(df['word']).difference({'for', 'of', 'the'})
@@ -15,7 +15,7 @@ def write_to_file(file_name, lst):
 
 pop_words = df.query('count > 100000')['word'].dropna()
 
-with open('l1/corpus_rand.txt', 'r', encoding='utf-8') as f:
+with open('l1/corpus/corpus_rand.txt', 'r', encoding='utf-8') as f:
     f_t = f.read()
     corp_words = f_t.split()
 

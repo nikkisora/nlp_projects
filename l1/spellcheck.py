@@ -63,7 +63,7 @@ def spell2(str1, dic, ret=5, dist=0.8, steps=0, freq_imp = 0.2):
 
 
 if __name__ == '__main__':
-    with open('l1/words_freq_dict.json', 'r') as json_file:
+    with open('l1/dictionaries/words_freq_dict.json', 'r') as json_file:
         word_dict = json.load(json_file)
     while 1:
         try:
