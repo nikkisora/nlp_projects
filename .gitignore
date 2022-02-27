@@ -116,3 +116,4 @@ dmypy.json
 #other
 articles/
 rand_articles/
+.vscode
