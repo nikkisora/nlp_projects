@@ -5,15 +5,15 @@ from os import walk
 import pandas as pd
 
 
-# df = pd.read_json('steam_reviews/reviews_corp.json')
-# full_text = ' '.join(df['review'])
+df = pd.read_json('steam_reviews/reviews_elden_ring.json')
+full_text = ' '.join(df['review'])
 
-dir_to_check = 'l2/books/'
-filenames = next(walk(dir_to_check), (None, None, []))[2]
-full_text = ''
-for file_name in filenames:
-    with open(dir_to_check+file_name) as file:
-        full_text += file.read()
+# dir_to_check = 'l2/books/'
+# filenames = next(walk(dir_to_check), (None, None, []))[2]
+# full_text = ''
+# for file_name in filenames:
+#     with open(dir_to_check+file_name) as file:
+#         full_text += file.read()
 
 full_text = re.sub(r'\[.*\]', ' ', full_text) # remove text styling
 full_text = re.sub(r'[^A-Za-z!?;\'. ]', ' ', full_text) # remove unneeded characters
@@ -41,4 +41,4 @@ get_n_grams = lambda df, n: df.groupby(df.columns.tolist()[:n]).\
 
 dic = get_n_grams(df, n).set_index([str(i+1) for i in range(n-1)]).sort_index()
 
-dic.to_csv('l2/cyber_dic_7.csv')
+dic.to_csv('l2/elden_dict.csv')
