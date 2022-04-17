@@ -3,6 +3,7 @@
 from tqdm import tqdm
 from typing import Counter
 from scipy.sparse import csr_matrix
+from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
@@ -18,7 +19,7 @@ def ww_sim(word, mat, tok2indx, indx2tok, topn=10):
     return sim_word_scores
 
 
-def get_matrix(dataset):
+def get_matrix(dataset, window = 2):
     # count all words
     w_counts = Counter()
     for doc in tqdm(dataset):
@@ -29,7 +30,6 @@ def get_matrix(dataset):
     indx2tok = {indx: tok for tok,indx in tok2indx.items()}
 
     # count skipgrams
-    window = 4
     skipgram_counts = Counter()
     for doc in tqdm(dataset):
         tokens = [tok2indx[tok] for tok in doc]

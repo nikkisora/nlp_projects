@@ -1,73 +1,114 @@
 #%%
-from sklearn.cluster import DBSCAN
 from sklearn.decomposition import TruncatedSVD
-from scipy.sparse import csr_matrix
 import fasttext
 import numpy as np
 import pandas as pd
 from get_dataset import get_dataset
 import PMI_matrix
+import hdbscan
 
-
-dataset, vocab = get_dataset(files_dir='D:/code/nlp_projects/l2/books', chunk_size=250)
-
-mat, t2i, i2t = PMI_matrix.get_matrix(dataset)
-
-svd = TruncatedSVD(n_components=100, n_iter=7, random_state=42)
-trunk_mat = svd.fit_transform(mat)
-#%%
-df = pd.DataFrame(trunk_mat).reset_index()
-
-#%%
-df['index'] = df['index'].apply(lambda x: i2t[x])
-
-
-# %%
-from sklearn.cluster import DBSCAN
-X = df.iloc[:,1:].values
-lsa_clust = DBSCAN().fit(X)
-
-core_samples_mask = np.zeros_like(lsa_clust.labels_, dtype=bool)
-core_samples_mask[lsa_clust.core_sample_indices_] = True
-labels = lsa_clust.labels_
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-
+from sklearn.manifold import TSNE
+import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Black removed and is used for noise instead.
-unique_labels = set(labels)
-colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
-for k, col in zip(unique_labels, colors):
-    if k == -1:
-        # Black used for noise.
-        col = [0, 0, 0, 0]
+dataset, vocab = get_dataset(files_dir='D:/code/nlp_projects/l2/books',
+                             remove_stopwords=True,
+                             stem=False,
+                             remove_singles = 5,
+                             chunk_size=250)
 
-    class_member_mask = labels == k
 
-    xy = X[class_member_mask & core_samples_mask]
-    plt.plot(
-        xy[:, 0],
-        xy[:, 1],
-        "o",
-        markerfacecolor=tuple(col),
-        markeredgecolor="k",
-        markersize=14,
-        lw=0,
-        alpha=0.01
-    )
 
-    xy = X[class_member_mask & ~core_samples_mask]
-    plt.plot(
-        xy[:, 0],
-        xy[:, 1],
-        "o",
-        markerfacecolor=tuple(col),
-        markeredgecolor="k",
-        markersize=6,
-        lw=0,
-        alpha=0.01
-    )
+# LSA on PPMI
 
-plt.title("Estimated number of clusters: %d" % n_clusters_)
+mat, t2i, i2t = PMI_matrix.get_matrix(dataset, window=5)
+svd = TruncatedSVD(n_components=100, n_iter=7, random_state=42, algorithm='arpack')
+trunk_mat = svd.fit_transform(mat)
+#normalize
+X_lsa = trunk_mat / np.sqrt(np.sum(trunk_mat*trunk_mat, axis=1, keepdims=True))
+
+
+clusterer_lsa = hdbscan.HDBSCAN(min_cluster_size=100, min_samples=1)
+cluster_lsa_labels = clusterer_lsa.fit_predict(X_lsa)
+print('LSA number of clusters: ', len(set(cluster_lsa_labels)))
+
+
+# Fasttext
+
+dataset_string = [' '.join(doc) for doc in dataset]
+dataset_string = '\n'.join(dataset_string)
+
+with open('D:/code/nlp_projects/l3/fasttext_dataset.txt', 'w+') as file:
+    file.write(dataset_string)
+
+ft_model = fasttext.train_unsupervised('D:/code/nlp_projects/l3/fasttext_dataset.txt',
+                                       'skipgram')
+
+X = []
+for w in range(len(vocab)):
+    X.append(ft_model[i2t[w]])
+X_ft = np.array(X)
+
+clusterer_ft = hdbscan.HDBSCAN(min_cluster_size=100, min_samples=1)
+cluster_ft_labels = clusterer_ft.fit_predict(X_ft)
+print('Fasttext number of clusters: ', len(set(cluster_ft_labels)))
+
+
+# graphs
+
+projection_lsa = TSNE().fit_transform(X_lsa)
+projection_ft = TSNE().fit_transform(X_ft)
+
+fig, (ax_lsa, ax_ft) = plt.subplots(1, 2, sharey=True)
+
+color_palette_lsa = sns.color_palette('Paired', len(set(cluster_lsa_labels)))
+cluster_colors_lsa = [color_palette_lsa[x] if x >= 0
+                      else (0.5, 0.5, 0.5)
+                      for x in clusterer_lsa.labels_]
+cluster_member_colors_lsa = [sns.desaturate(x, p) for x, p in
+                         zip(cluster_colors_lsa, clusterer_lsa.probabilities_)]
+ax_lsa.scatter(*projection_lsa.T, s=50, linewidth=0,
+               c=cluster_member_colors_lsa, alpha=0.25)
+
+color_palette_ft = sns.color_palette('Paired', len(set(cluster_ft_labels)))
+cluster_colors_ft = [color_palette_ft[x] if x >= 0
+                      else (0.5, 0.5, 0.5)
+                      for x in clusterer_ft.labels_]
+cluster_member_colors_ft = [sns.desaturate(x, p) for x, p in
+                         zip(cluster_colors_ft, clusterer_ft.probabilities_)]
+ax_ft.scatter(*projection_ft.T, s=50, linewidth=0,
+               c=cluster_member_colors_ft, alpha=0.25)
+
 plt.show()
+
+# save dataframes with clusters
+#%%
+df_lsa = pd.DataFrame({'cluster':cluster_lsa_labels}).reset_index()
+df_lsa['index'] = df_lsa['index'].apply(lambda x: i2t[x])
+print('LSA cluster sizes:\n', df_lsa['cluster'].value_counts())
+
+words_in_cluster = dict()
+for i in range(-1,len(set(cluster_lsa_labels))-1):
+    words_in_cluster[f'{i}'] = list(df_lsa.query(f'cluster == {i}').iloc[:,0])
+
+words_in_cluster = pd.DataFrame.from_dict(words_in_cluster, orient='index')
+words_in_cluster = words_in_cluster.transpose()
+words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/lsa_clusters.csv')
+
+
+df_ft = pd.DataFrame({'cluster':cluster_ft_labels}).reset_index()
+df_ft['index'] = df_ft['index'].apply(lambda x: i2t[x])
+print('Fasttext cluster sizes:\n', df_ft['cluster'].value_counts())
+
+
+words_in_cluster = dict()
+for i in range(-1,len(set(cluster_ft_labels))-1):
+    words_in_cluster[f'{i}'] = list(df_ft.query(f'cluster == {i}').iloc[:,0])
+
+words_in_cluster = pd.DataFrame.from_dict(words_in_cluster, orient='index')
+words_in_cluster = words_in_cluster.transpose()
+words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/fasttext_clusters.csv')
+
+
+
 # %%
