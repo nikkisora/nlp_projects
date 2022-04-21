@@ -21,6 +21,7 @@ def get_dataset(
         ham vocab, spam vocab
     """
     spam_ds = pd.read_csv(dataset_path, index_col=0, usecols=[0,2,3])
+    spam_ds['text'] = spam_ds['text'].str.lower()
 
     vectorizer = CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df)
     vectorizer.fit(spam_ds.query('label_num == 0')['text'])
