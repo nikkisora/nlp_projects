@@ -14,21 +14,20 @@ import matplotlib.pyplot as plt
 dataset, vocab = get_dataset(files_dir='D:/code/nlp_projects/l2/books',
                              remove_stopwords=True,
                              stem=False,
-                             remove_singles = 5,
+                             remove_singles = 2,
                              chunk_size=250)
 
 
 
 # LSA on PPMI
 
-mat, t2i, i2t = PMI_matrix.get_matrix(dataset, window=5)
+mat, t2i, i2t = PMI_matrix.get_matrix(dataset, window=11)
 svd = TruncatedSVD(n_components=100, n_iter=7, random_state=42, algorithm='arpack')
 trunk_mat = svd.fit_transform(mat)
 #normalize
 X_lsa = trunk_mat / np.sqrt(np.sum(trunk_mat*trunk_mat, axis=1, keepdims=True))
 
-
-clusterer_lsa = hdbscan.HDBSCAN(min_cluster_size=100, min_samples=1)
+clusterer_lsa = hdbscan.HDBSCAN(min_cluster_size=10, min_samples=1, cluster_selection_method='leaf')
 cluster_lsa_labels = clusterer_lsa.fit_predict(X_lsa)
 print('LSA number of clusters: ', len(set(cluster_lsa_labels)))
 
@@ -49,7 +48,7 @@ for w in range(len(vocab)):
     X.append(ft_model[i2t[w]])
 X_ft = np.array(X)
 
-clusterer_ft = hdbscan.HDBSCAN(min_cluster_size=100, min_samples=1)
+clusterer_ft = hdbscan.HDBSCAN(min_cluster_size=10, min_samples=1, cluster_selection_method='leaf')
 cluster_ft_labels = clusterer_ft.fit_predict(X_ft)
 print('Fasttext number of clusters: ', len(set(cluster_ft_labels)))
 
@@ -93,7 +92,7 @@ for i in range(-1,len(set(cluster_lsa_labels))-1):
 
 words_in_cluster = pd.DataFrame.from_dict(words_in_cluster, orient='index')
 words_in_cluster = words_in_cluster.transpose()
-words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/lsa_clusters.csv')
+words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/lsa_clusters_1.csv')
 
 
 df_ft = pd.DataFrame({'cluster':cluster_ft_labels}).reset_index()
@@ -107,7 +106,7 @@ for i in range(-1,len(set(cluster_ft_labels))-1):
 
 words_in_cluster = pd.DataFrame.from_dict(words_in_cluster, orient='index')
 words_in_cluster = words_in_cluster.transpose()
-words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/fasttext_clusters.csv')
+words_in_cluster.to_csv('D:/code/nlp_projects/l3/results/fasttext_clusters_1.csv')
 
 
 
