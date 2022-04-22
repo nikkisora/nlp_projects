@@ -11,6 +11,7 @@ import joblib
 
 
 def train():
+    """train"""
     X, y, _, _ = get_dataset(min_df=0)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7,
@@ -39,7 +40,7 @@ def train():
 
 def test():
     X, y, _, _ = get_dataset(min_df=0)
-    X_train, X_test, _, y_test = train_test_split(X, y, train_size=0.7,
+    _, X_test, _, y_test = train_test_split(X, y, train_size=0.7,
                                                         stratify=y, random_state=2)
     vectorizer = joblib.load('./l4 spam filter/models/bayes_tfidf_vect.joblib')
     tfidf_test = vectorizer.transform(X_test)

@@ -10,6 +10,7 @@ from collections import Counter
 def get_dataset(files_dir, remove_stopwords=True,
                 stem = True, remove_singles = 1,
                 chunk_size=100):
+    """get dataset"""
     files = Path(files_dir).iterdir()
     corp = ''
 

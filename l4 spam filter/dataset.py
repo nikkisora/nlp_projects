@@ -1,5 +1,15 @@
+from distutils.command.clean import clean
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
+import re
+from nltk.corpus import stopwords
+
+def clean_text(text):
+    """clean text"""
+    text = re.sub(r'[^a-z. ]', ' ', text).split()
+    sw = set(stopwords.words('English'))
+    text = [w for w in text if w not in sw]
+    return ' '.join(text)
 
 
 def get_dataset(
@@ -22,6 +32,7 @@ def get_dataset(
     """
     spam_ds = pd.read_csv(dataset_path, index_col=0, usecols=[0,2,3])
     spam_ds['text'] = spam_ds['text'].str.lower()
+    spam_ds['text'] = spam_ds['text'].apply(clean_text)
 
     vectorizer = CountVectorizer(stop_words='english', max_df=max_df, min_df=min_df)
     vectorizer.fit(spam_ds.query('label_num == 0')['text'])
