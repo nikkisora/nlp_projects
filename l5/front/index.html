@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Summary test bench</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container-fluid">
+        <h1>Summarization test bench</h1>
+        <div class="row">
+            <form id="textForm">
+                <div class="mb-3">
+                    <label for="textArea" class="form-label">Text to summarize</label>
+                    <textarea class="form-control" id="textArea" rows="5"></textarea>
+                </div>
+                <label for="words" class="form-label">Max words (some models can exceed)</label>
+                <div class="col-1 mb-3">
+                    <input type="number" min='10' class="form-control" id="words" rows="5" value="30">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-3">Send</button>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <h3>Extractive models</h3>
+            </div>
+            <div class="col-8">
+                <h3>Abstractive methods</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <h5>Seq2seq</h5>
+            </div>
+            <div class="col-4">
+                <h5>Transformers</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="textrank" class="form-label">Text rank</label>
+                <textarea class="form-control" id="textrank" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4">
+                <label for="seq2seq" class="form-label">Seq2seq LSTM</label>
+                <textarea class="form-control" id="seq2seq" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4">
+                <label for="bart" class="form-label">BART</label>
+                <textarea class="form-control" id="bart" rows="7" disabled></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="topicrank" class="form-label">Topic rank</label>
+                <textarea class="form-control" id="topicrank" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <label for="gpt2" class="form-label">GPT-2</label>
+                <textarea class="form-control" id="gpt2" rows="7" disabled></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="positionrank" class="form-label">Position rank</label>
+                <textarea class="form-control" id="positionrank" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <label for="t5" class="form-label">T5-base</label>
+                <textarea class="form-control" id="t5" rows="7" disabled></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="summatextrank" class="form-label">Text rank (summa)</label>
+                <textarea class="form-control" id="summatextrank" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <label for="xlnet" class="form-label">XLNet</label>
+                <textarea class="form-control" id="xlnet" rows="7" disabled></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="lexrank" class="form-label">Lexrank</label>
+                <textarea class="form-control" id="lexrank" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="lsa" class="form-label">LSA</label>
+                <textarea class="form-control" id="lsa" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="luhn" class="form-label">Luhn</label>
+                <textarea class="form-control" id="luhn" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label for="kl" class="form-label">KL</label>
+                <textarea class="form-control" id="kl" rows="7" disabled></textarea>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4"></div>
+        </div>
+    </div>
+    <script src="./main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  </body>
+</html>

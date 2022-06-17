@@ -117,3 +117,5 @@ dmypy.json
 articles/
 rand_articles/
 .vscode
+books/
+dataset/
